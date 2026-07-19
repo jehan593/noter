@@ -7,8 +7,9 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 /**
  * Sends the current note to a Notesnook account via its Inbox API
@@ -33,7 +34,7 @@ object NotesnookApi {
     // The API requires a non-empty title -- it does not fill one in on its own -- so this stands
     // in for "no title" with the current local date and time.
     private fun defaultNoteTitle(): String =
-        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date())
+        "Note: NOTER - ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())}"
 
     suspend fun sendNote(apiKey: String, text: String, tagId: String?): Result<Unit> =
         withContext(Dispatchers.IO) {
