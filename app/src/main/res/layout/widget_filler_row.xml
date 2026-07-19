@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Invisible filler row: a ListView only registers taps on actual rows, so any leftover space
+     below real content (few tasks/a short note in a widget resized taller than that content) is
+     otherwise dead to taps. Padding the adapter with enough of these (see the *_FILLER_COUNT
+     constants in the RemoteViewsFactory classes) makes the list's total content height exceed any
+     realistic widget size, so every point in the widget maps to a real, clickable row. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filler"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:text="" />
