@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Deliberately no <uses-permission> entries: Noter is fully offline, has no foreground
-         service, no usage-stats access, no notifications, no boot receiver. -->
+    <!-- The only permission Noter requests: needed solely for the opt-in "Send to Notesnook"
+         action on the Notes tab, which POSTs the current note to a user-configured Notesnook
+         inbox. Nothing else in the app touches the network — no foreground service, no
+         usage-stats access, no notifications, no boot receiver. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NoterApplication"

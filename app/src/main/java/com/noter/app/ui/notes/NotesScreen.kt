@@ -11,22 +11,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -45,6 +54,10 @@ fun NotesScreen() {
         }
     )
     val noteText by viewModel.noteText.collectAsState()
+    val notesnookSettings by viewModel.notesnookSettings.collectAsState()
+    val isSettingsDialogOpen by viewModel.isSettingsDialogOpen.collectAsState()
+    val isSending by viewModel.isSending.collectAsState()
+    val statusMessage by viewModel.statusMessage.collectAsState()
     val clipboardManager = LocalClipboardManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val latestViewModel by rememberUpdatedState(viewModel)
@@ -93,6 +106,29 @@ fun NotesScreen() {
                 Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(16.dp))
                 Text("Clear", modifier = Modifier.padding(start = 6.dp))
             }
+            OutlinedButton(
+                onClick = { viewModel.sendToNotesnook() },
+                enabled = !isSending,
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                modifier = Modifier.height(34.dp)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(16.dp))
+                Text(if (isSending) "Sending…" else "Send", modifier = Modifier.padding(start = 6.dp))
+            }
+            IconButton(
+                onClick = { viewModel.openSettingsDialog() },
+                modifier = Modifier.size(34.dp)
+            ) {
+                Icon(Icons.Filled.Settings, contentDescription = "Notesnook settings", modifier = Modifier.size(18.dp))
+            }
+        }
+        if (statusMessage != null) {
+            Text(
+                text = statusMessage.orEmpty(),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
         OutlinedTextField(
             value = noteText,
@@ -101,4 +137,65 @@ fun NotesScreen() {
             placeholder = { Text("Type your note…") }
         )
     }
+
+    if (isSettingsDialogOpen) {
+        NotesnookSettingsDialog(
+            initialApiKey = notesnookSettings.apiKey.orEmpty(),
+            initialTagId = notesnookSettings.tagId.orEmpty(),
+            onDismiss = { viewModel.dismissSettingsDialog() },
+            onSave = { apiKey, tagId -> viewModel.saveNotesnookSettings(apiKey, tagId) }
+        )
+    }
+}
+
+@Composable
+private fun NotesnookSettingsDialog(
+    initialApiKey: String,
+    initialTagId: String,
+    onDismiss: () -> Unit,
+    onSave: (apiKey: String, tagId: String) -> Unit
+) {
+    var apiKey by remember { mutableStateOf(initialApiKey) }
+    var tagId by remember { mutableStateOf(initialTagId) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Notesnook") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    "From Notesnook: Settings > Inbox > Create Key.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                OutlinedTextField(
+                    value = apiKey,
+                    onValueChange = { apiKey = it },
+                    label = { Text("Inbox API key") },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = tagId,
+                    onValueChange = { tagId = it },
+                    label = { Text("Tag ID (optional)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    "Right-click a tag in Notesnook and choose Copy ID. Sent notes are titled with " +
+                        "the current date and time.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(apiKey, tagId) }) { Text("Save") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }

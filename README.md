@@ -1,15 +1,19 @@
 # Noter
 
-A simple, fully offline Android note + task app. Nord color palette, Martian Mono Nerd Font,
+A simple, offline-first Android note + task app. Nord color palette, Martian Mono Nerd Font,
 Jetpack Compose UI, two home-screen widgets.
 
-Noter requests **no permissions at all** — everything is stored locally on-device.
+Everything is stored locally on-device. The one exception is **Send** on the Notes tab, an
+opt-in action that POSTs the current note to a user-configured [Notesnook](https://notesnook.com)
+inbox — nothing else in the app touches the network.
 
 ## How it works
 
 - **Notes tab**: one free-form text box — type into it and it autosaves as you go (debounced,
   with an immediate flush when the app is backgrounded). **Copy** puts the note text on the
-  clipboard; **Clear** empties it immediately.
+  clipboard; **Clear** empties it immediately; **Send** posts the note to your Notesnook inbox
+  (configure the Inbox API key and an optional tag ID via the gear icon — from Notesnook:
+  Settings > Inbox > Create Key).
 - **Tasks tab**: add tasks with the input at the top, tap a checkbox to mark one done
   (shown with strike-through), and **long-press + drag** a task to reorder the list — order and
   done-state persist across restarts.
@@ -44,5 +48,5 @@ so the in-app screens are where you'll see the real Martian Mono.
 
 ## Permissions
 
-None. Noter has no `<uses-permission>` entries at all — no internet access, no background
-service, nothing that needs a runtime or special grant.
+Just `INTERNET`, used solely by the opt-in Send-to-Notesnook action on the Notes tab. There's no
+background service, no runtime-grant permission, and no network access anywhere else in the app.
