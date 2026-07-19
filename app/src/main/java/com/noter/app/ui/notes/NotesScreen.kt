@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -110,11 +112,22 @@ fun NotesScreen() {
                 onClick = { viewModel.sendToNotesnook() },
                 enabled = !isSending,
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.height(34.dp)
+                // Fixed width sized for the longer "Sending…" label so the button — and anything
+                // laid out after it — doesn't shift when the label swaps between the two states.
+                modifier = Modifier.height(34.dp).width(120.dp)
             ) {
                 Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(16.dp))
-                Text(if (isSending) "Sending…" else "Send", modifier = Modifier.padding(start = 6.dp))
+                Text(
+                    if (isSending) "Sending…" else "Send",
+                    modifier = Modifier.padding(start = 6.dp),
+                    maxLines = 1,
+                    softWrap = false
+                )
             }
+            // Weighted spacer (rather than relying on the preceding buttons' widths staying
+            // constant) absorbs any width change so the settings icon stays pinned to the row's
+            // trailing edge no matter what the buttons before it do.
+            Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = { viewModel.openSettingsDialog() },
                 modifier = Modifier.size(34.dp)
@@ -122,14 +135,15 @@ fun NotesScreen() {
                 Icon(Icons.Filled.Settings, contentDescription = "Notesnook settings", modifier = Modifier.size(18.dp))
             }
         }
-        if (statusMessage != null) {
-            Text(
-                text = statusMessage.orEmpty(),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
+        // Always rendered (even when empty) so this line's height is reserved permanently —
+        // otherwise the note body below shifts up/down every time a status message appears or
+        // clears.
+        Text(
+            text = statusMessage.orEmpty(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp)
+        )
         OutlinedTextField(
             value = noteText,
             onValueChange = { viewModel.onTextChange(it) },
