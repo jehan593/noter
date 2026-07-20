@@ -19,6 +19,13 @@ android {
         // build; a static value would make every CI-built APK look identical.
         versionCode = (project.findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 1
         versionName = (project.findProperty("appVersionName") as String?) ?: "1.0"
+
+        // Real phones are arm64-v8a (current) or armeabi-v7a (older/budget) — x86/x86_64 only
+        // matter for emulators, which aren't a distribution target for a sideloaded APK. Drops
+        // the emulator-only native library variants from every build.
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     signingConfigs {
@@ -64,6 +71,10 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // kotlin-stdlib/kotlinx-coroutines metadata for kotlin-reflect and coroutine debug
+            // probes — neither is used anywhere in this app (no reflection, no debug-probe API).
+            excludes += "kotlin/**"
+            excludes += "DebugProbesKt.bin"
         }
     }
 }
