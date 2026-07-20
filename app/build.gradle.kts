@@ -37,7 +37,13 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // Same committed keystore as the debug signingConfig above — this is the variant CI
+            // and local builds actually ship (see build-apk.yml), so it needs the same pinned key
+            // for update checkers (Obtainium) and Android itself to accept it as an in-place
+            // update rather than a signature conflict.
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -84,6 +90,4 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.datastore.preferences)
-
-    implementation(libs.androidx.work.runtime.ktx)
 }

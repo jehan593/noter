@@ -3,7 +3,7 @@ package com.noter.app
 import android.app.Application
 import com.noter.app.di.AppContainer
 import com.noter.app.di.DefaultAppContainer
-import com.noter.app.widget.WidgetUpdateWorker
+import com.noter.app.widget.WidgetRefreshAlarmReceiver
 
 class NoterApplication : Application() {
     lateinit var container: AppContainer
@@ -12,6 +12,6 @@ class NoterApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = DefaultAppContainer(this)
-        WidgetUpdateWorker.schedule(this)
+        WidgetRefreshAlarmReceiver.schedule(this)
     }
 }
