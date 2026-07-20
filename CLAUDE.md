@@ -5,15 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 Noter: a fully offline Android note + task app. Nord color palette, Martian Mono Nerd Font, Jetpack
-Compose UI, two home-screen widgets (Note + Task). No `<uses-permission>` entries at all — no
-internet, no background service, nothing needing a runtime grant. Keep it that way unless the user
-explicitly asks for a feature that requires a new permission.
+Compose UI, two home-screen widgets (Note + Task). The only `<uses-permission>` is `INTERNET`, and
+only for the opt-in "Send to Notesnook" action on the Notes tab — no background service, no
+runtime-grant permissions. Keep it that way unless the user explicitly asks for a feature that
+requires a new permission.
 
 ## Commands
 
 ```sh
-./gradlew assembleDebug      # build app/build/outputs/apk/debug/app-debug.apk
-./gradlew build              # full build incl. lint/checks
+./gradlew assembleRelease     # build app/build/outputs/apk/release/app-release.apk (R8-minified, resource-shrunk — what CI ships)
+./gradlew assembleDebug       # build app/build/outputs/apk/debug/app-debug.apk (local iteration only)
+./gradlew build               # full build incl. lint/checks
 ```
 
 - No test suite exists in this repo currently.
@@ -23,6 +25,9 @@ explicitly asks for a feature that requires a new permission.
   (`.github/workflows/build-apk.yml`) passes `github.run_number` so every push gets a strictly
   increasing versionCode (required for update checkers like Obtainium to see a new build) and its
   own tag/release rather than overwriting one shared release.
+- The `release` build type reuses the same pinned `debug.keystore` signing key as `debug` (see
+  `app/build.gradle.kts`) so in-place updates via Obtainium keep working even though the shipped
+  variant changed from debug to release.
 - Build the APK and hand it off rather than installing to an emulator/adb yourself — the user
   tests on their own device.
 
@@ -50,8 +55,11 @@ boilerplate beyond what's needed to pass the repo in).
 
 **Every repository mutation pushes a widget refresh** (`NoteWidgetProvider.requestUpdate` /
 `TaskWidgetProvider.requestUpdate`) as its last step — this is the primary widget-refresh path.
-`WidgetUpdateWorker` (WorkManager, 15 min periodic — the shortest interval WorkManager allows) is
-only a fallback for pushes an OEM launcher's throttling dropped.
+`WidgetRefreshAlarmReceiver` (AlarmManager, ~15 min inexact repeating) is only a fallback for
+pushes an OEM launcher's throttling dropped — deliberately AlarmManager over WorkManager, since
+WorkManager's own manifest unconditionally adds four permissions (`WAKE_LOCK`,
+`ACCESS_NETWORK_STATE`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`) this app doesn't otherwise
+need for what's just a periodic broadcast.
 
 **Widgets are classic `AppWidgetProvider` + `RemoteViews`, not Jetpack Glance.** Glance's own
 `GlanceAppWidget.updateAll` update path has no protection against the cached-app freezer
