@@ -97,7 +97,7 @@ fun NotesScreen() {
                     contentDescription = null,
                     modifier = Modifier.size(16.dp)
                 )
-                Text("Copy", modifier = Modifier.padding(start = 6.dp))
+                Text("Copy", modifier = Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelSmall)
             }
             OutlinedButton(
                 onClick = { viewModel.onClear() },
@@ -106,7 +106,7 @@ fun NotesScreen() {
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
                 Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(16.dp))
-                Text("Clear", modifier = Modifier.padding(start = 6.dp))
+                Text("Clear", modifier = Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelSmall)
             }
             OutlinedButton(
                 onClick = { viewModel.sendToNotesnook() },
@@ -120,6 +120,7 @@ fun NotesScreen() {
                 Text(
                     if (isSending) "Sending…" else "Send",
                     modifier = Modifier.padding(start = 6.dp),
+                    style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
                     softWrap = false
                 )
