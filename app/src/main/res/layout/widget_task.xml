@@ -5,40 +5,40 @@
     android:layout_height="match_parent"
     android:background="@color/nord0"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="6dp">
 
+    <!-- Full-width "chip" look (own background, padding, trailing open icon) is deliberate: this
+         is the one region that's always a plain, single-region click (no ListView underneath
+         fighting it for scroll-vs-tap arbitration), so it's styled to visually read as THE
+         reliable tap-to-open target, distinct from the scrollable content below it. -->
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/widget_title_chip"
+        android:drawableEnd="@drawable/ic_widget_open"
+        android:drawablePadding="6dp"
         android:fontFamily="monospace"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="5dp"
         android:text="@string/widget_title_tasks"
         android:textColor="@color/nord8"
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
 
-    <FrameLayout
+    <!-- No separate "empty" view/setEmptyView swap — a totally passive region with zero touch
+         handling turned out to get a default tap-to-open fallback from some launchers (observed:
+         tapping anywhere on the widget opened the app, but only while the task list was empty).
+         Instead the list always has at least one row (a dimmed placeholder when empty), so this
+         area is always backed by an actively touch-handling ListView, same as with real content. -->
+    <ListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
-        android:layout_weight="1">
-
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:scrollbars="none" />
-
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="@string/widget_no_tasks"
-            android:textColor="@color/nord3"
-            android:textSize="14sp" />
-
-    </FrameLayout>
+        android:layout_weight="1"
+        android:divider="@null"
+        android:scrollbars="none" />
 
 </LinearLayout>
