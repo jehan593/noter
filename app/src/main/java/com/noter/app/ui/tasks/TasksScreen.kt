@@ -1,5 +1,6 @@
 package com.noter.app.ui.tasks
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,17 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,14 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.noter.app.R
 import com.noter.app.ui.rememberAppContainer
 import com.noter.app.ui.theme.nord11
 import com.noter.app.ui.theme.nord12
@@ -61,7 +56,25 @@ fun TasksScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+        // Delete completed / Delete all — the two destructive actions — sit up top, above the
+        // add-task box. Check all / Uncheck all move below the add-task box instead, closer to
+        // the task list they act on.
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            TaskActionButton(
+                label = "Delete completed",
+                tint = nord12,
+                onClick = { viewModel.deleteCompleted() }
+            )
+            TaskActionButton(
+                label = "Delete all",
+                tint = nord11,
+                onClick = { viewModel.deleteAll() }
+            )
+        }
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             OutlinedTextField(
                 value = newTaskText,
                 onValueChange = { newTaskText = it },
@@ -75,44 +88,19 @@ fun TasksScreen() {
                 Icon(Icons.Filled.Add, contentDescription = "Add task")
             }
         }
-        // 2x2 grid rather than a single row — four compact buttons don't comfortably fit one row
-        // on a phone-width screen without either truncating labels or scrolling sideways.
         Row(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             TaskActionButton(
-                label = "Mark all",
-                icon = Icons.Filled.Done,
+                label = "Check all",
                 tint = nord14,
-                onClick = { viewModel.markAllDone() },
-                modifier = Modifier.weight(1f)
+                onClick = { viewModel.markAllDone() }
             )
             TaskActionButton(
-                label = "Unmark all",
-                icon = Icons.Filled.Clear,
+                label = "Uncheck all",
                 tint = nord9,
-                onClick = { viewModel.unmarkAllDone() },
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TaskActionButton(
-                label = "Clear done",
-                painter = painterResource(R.drawable.ic_delete_done),
-                tint = nord12,
-                onClick = { viewModel.deleteCompleted() },
-                modifier = Modifier.weight(1f)
-            )
-            TaskActionButton(
-                label = "Clear all",
-                icon = Icons.Filled.Delete,
-                tint = nord11,
-                onClick = { viewModel.deleteAll() },
-                modifier = Modifier.weight(1f)
+                onClick = { viewModel.unmarkAllDone() }
             )
         }
         DraggableTaskList(
@@ -130,21 +118,15 @@ private fun TaskActionButton(
     label: String,
     tint: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
-    painter: Painter? = null
+    modifier: Modifier = Modifier
 ) {
     OutlinedButton(
         onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
         modifier = modifier.height(34.dp),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = tint)
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = tint),
+        border = BorderStroke(1.dp, tint)
     ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp))
-        } else if (painter != null) {
-            Icon(painter = painter, contentDescription = null, modifier = Modifier.size(16.dp))
-        }
-        Text(label, modifier = Modifier.padding(start = 4.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
     }
 }
