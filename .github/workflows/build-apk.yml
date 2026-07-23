@@ -29,12 +29,22 @@ jobs:
       - name: Build release APK
         run: ./gradlew assembleRelease -PappVersionCode=${{ github.run_number }} -PappVersionName=1.0.${{ github.run_number }}
 
+      # A second, human-readable copy of the same APK alongside the original app-release.apk —
+      # not a replacement. Keeping app-release.apk's name unchanged is what lets
+      # .../releases/latest/download/app-release.apk stay a fixed, version-less URL that always
+      # resolves to the newest build (bookmark/QR code/Obtainium-friendly); the versioned copy is
+      # for humans browsing the release page who want the version visible in the filename itself.
+      - name: Add versioned copy of the APK
+        run: cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/Noter-v1.0.${{ github.run_number }}.apk"
+
       # Downloadable from the Actions tab for this specific run (kept for ~90 days).
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
           name: noter-release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          path: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/Noter-v1.0.${{ github.run_number }}.apk
 
       # Release body is the HEAD commit's message at dispatch time, so release notes describe
       # what actually changed instead of a generic "automatically built" placeholder.
@@ -58,5 +68,5 @@ jobs:
           tag: v1.0.${{ github.run_number }}
           name: v1.0.${{ github.run_number }}
           body: ${{ steps.commit_message.outputs.message }}
-          artifacts: app/build/outputs/apk/release/app-release.apk
+          artifacts: "app/build/outputs/apk/release/app-release.apk,app/build/outputs/apk/release/Noter-v1.0.${{ github.run_number }}.apk"
           prerelease: false
