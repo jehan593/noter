@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 31+ override: launchers on these versions clip the whole widget to
+     system_app_widget_background_radius automatically, and that radius varies by device/launcher
+     (commonly much bigger than a hardcoded 8dp). Matching the chip's corner to the paired
+     system_app_widget_inner_radius keeps it visually concentric with that outer clip instead of
+     looking like a mismatched, tighter-radius rectangle sitting inside a much rounder one. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/nord1" />
+    <corners android:radius="@android:dimen/system_app_widget_inner_radius" />
+</shape>
