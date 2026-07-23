@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gives the widget title row a distinct "button" look (vs. the plain background behind it) so
+     it visually reads as the reliable, dedicated tap-to-open target — the ListView-backed content
+     area below it can't offer the same one-tap guarantee since it also has to handle scrolling. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/nord1" />
+    <corners android:radius="8dp" />
+</shape>

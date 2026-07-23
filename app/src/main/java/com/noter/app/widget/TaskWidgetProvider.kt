@@ -24,7 +24,13 @@ class TaskWidgetProvider : AppWidgetProvider() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, TaskWidgetProvider::class.java))
             if (ids.isNotEmpty()) {
-                refresh(context, manager, ids)
+                // Data-only refresh: notifyAppWidgetViewDataChanged asks the already-connected
+                // ListView adapter to requery, without tearing down and reconnecting it the way a
+                // full updateAppWidget(buildViews()) does via setRemoteAdapter. Reconnecting on
+                // every mutation left a brief window right after the list changed (e.g. going
+                // from empty to populated) where rows were visually present but not yet fully
+                // wired for clicks — most noticeable in the filler rows near the bottom.
+                manager.notifyAppWidgetViewDataChanged(ids, R.id.list)
             }
         }
     }
@@ -58,7 +64,6 @@ class TaskWidgetProvider : AppWidgetProvider() {
 
         val serviceIntent = Intent(context, TaskWidgetService::class.java)
         views.setRemoteAdapter(R.id.list, serviceIntent)
-        views.setEmptyView(R.id.list, R.id.empty)
 
         val launchIntent = buildLaunchIntent(context, MainActivity.TAB_TASKS)
         val pendingIntent = PendingIntent.getActivity(
@@ -67,14 +72,11 @@ class TaskWidgetProvider : AppWidgetProvider() {
             launchIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        views.setPendingIntentTemplate(R.id.list, pendingIntent)
-        // RemoteViews click regions don't reliably bubble up from a child to a container's own
-        // setOnClickPendingIntent (the ListView claims touches within its bounds for its own
-        // scroll-gesture detection even when it has zero rows) — every tappable leaf needs its
-        // own explicit PendingIntent, same as Notally wires its widget's empty-state view.
-        views.setOnClickPendingIntent(R.id.root, pendingIntent)
+        // The title chip is the ONLY tap-to-open target — deliberately not the ListView content
+        // area (no setPendingIntentTemplate/fillInIntent) or root/empty. That ListView-mediated
+        // click path was the source of the flaky/inconsistent taps; the content area is read-only
+        // (scroll only) now, and the title is the single, reliable, always-clickable affordance.
         views.setOnClickPendingIntent(R.id.title, pendingIntent)
-        views.setOnClickPendingIntent(R.id.empty, pendingIntent)
         return views
     }
 

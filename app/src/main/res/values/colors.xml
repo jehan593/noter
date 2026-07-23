@@ -6,6 +6,7 @@
     <!-- Nord palette, XML copies for use in RemoteViews-based widget layouts (see ui/theme/Color.kt
          for the Compose equivalents used everywhere else). -->
     <color name="nord0">#2E3440</color>
+    <color name="nord1">#3B4252</color>
     <color name="nord3">#4C566A</color>
     <color name="nord6">#ECEFF4</color>
     <color name="nord8">#88C0D0</color>

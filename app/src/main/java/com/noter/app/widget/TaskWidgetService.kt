@@ -40,20 +40,25 @@ private class TaskRemoteViewsFactory(
         // used for in-app dragging is untouched, this is purely how the read-only widget lays
         // them out.
         tasks = all.sortedBy { it.isDone }
-        fillerCount = if (tasks.isEmpty()) 0 else {
-            computeFillerRowCount(context, appWidgetId, contentHeightDp = tasks.size * TASK_ROW_HEIGHT_DP)
-        }
+        val contentRows = maxOf(tasks.size, 1)
+        fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = contentRows * TASK_ROW_HEIGHT_DP)
     }
 
-    // Zero real tasks still means zero here — that's what lets setEmptyView's dedicated
-    // full-size "No tasks yet" view take over instead of a page of blank filler rows.
-    override fun getCount(): Int = if (tasks.isEmpty()) 0 else tasks.size + fillerCount
+    // Real task count, or 1 for the dimmed placeholder row when empty — rather than 0 handing off
+    // to a separate setEmptyView sibling. A widget region with zero touch-handling of its own (no
+    // ListView, no click) turned out to pick up a default tap-to-open fallback on some launchers;
+    // keeping the ListView always populated keeps this area always backed by real touch handling.
+    override fun getCount(): Int = maxOf(tasks.size, 1) + fillerCount
 
     override fun getViewAt(position: Int): RemoteViews {
-        if (position >= tasks.size) {
-            val views = RemoteViews(context.packageName, R.layout.widget_filler_row)
-            views.setOnClickFillInIntent(R.id.filler, Intent())
+        if (tasks.isEmpty() && position == 0) {
+            val views = RemoteViews(context.packageName, R.layout.widget_placeholder_row)
+            views.setTextViewText(R.id.placeholder, context.getString(R.string.widget_no_tasks))
             return views
+        }
+
+        if (position >= tasks.size) {
+            return RemoteViews(context.packageName, R.layout.widget_filler_row)
         }
 
         val task = tasks[position]
@@ -66,12 +71,11 @@ private class TaskRemoteViewsFactory(
         views.setTextColor(R.id.text, context.getColor(if (task.isDone) R.color.nord3 else R.color.nord6))
         views.setTextColor(R.id.check, context.getColor(if (task.isDone) R.color.nord3 else R.color.nord8))
 
-        views.setOnClickFillInIntent(R.id.row, Intent())
         return views
     }
 
     override fun getLoadingView(): RemoteViews? = null
-    override fun getViewTypeCount(): Int = 2
+    override fun getViewTypeCount(): Int = 3
     override fun getItemId(position: Int): Long =
         if (position < tasks.size) tasks[position].id else -(position - tasks.size + 1).toLong()
     override fun hasStableIds(): Boolean = true
