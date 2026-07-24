@@ -34,6 +34,10 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         runBlocking { repository.toggleDone(task) }
     }
 
+    fun renameTask(task: TaskEntity, newText: String) {
+        if (newText.isNotBlank()) runBlocking { repository.renameTask(task, newText.trim()) }
+    }
+
     fun commitReorder(orderedTasks: List<TaskEntity>) {
         runBlocking { repository.reorder(orderedTasks) }
     }

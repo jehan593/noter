@@ -1,6 +1,6 @@
 package com.noter.app.ui.tasks
 
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +33,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.noter.app.data.db.entity.TaskEntity
@@ -51,6 +51,7 @@ fun DraggableTaskList(
     tasks: List<TaskEntity>,
     onToggle: (TaskEntity) -> Unit,
     onDelete: (TaskEntity) -> Unit,
+    onRename: (TaskEntity) -> Unit,
     onCommitReorder: (List<TaskEntity>) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -94,7 +95,7 @@ fun DraggableTaskList(
                         modifier = Modifier
                             .size(40.dp)
                             .pointerInput(task.id) {
-                                detectDragGesturesAfterLongPress(
+                                detectDragGestures(
                                     onDragStart = {
                                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                         dragState = DragState(
@@ -111,8 +112,8 @@ fun DraggableTaskList(
                                     onDragCancel = { dragState = null },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
-                                        val state = dragState ?: return@detectDragGesturesAfterLongPress
-                                        if (rowHeightPx <= 0f) return@detectDragGesturesAfterLongPress
+                                        val state = dragState ?: return@detectDragGestures
+                                        if (rowHeightPx <= 0f) return@detectDragGestures
                                         var newOffset = state.offsetY + dragAmount.y
                                         var newIndex = state.currentIndex
                                         var newList = state.workingList
@@ -138,14 +139,15 @@ fun DraggableTaskList(
                     Checkbox(checked = task.isDone, onCheckedChange = { onToggle(task) })
                     Text(
                         text = task.text,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                         textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None,
                         modifier = Modifier
                             .weight(1f)
                             .alpha(if (task.isDone) 0.5f else 1f),
                         style = MaterialTheme.typography.bodyLarge
                     )
+                    IconButton(onClick = { onRename(task) }) {
+                        Icon(Icons.Filled.Edit, contentDescription = "Rename task")
+                    }
                     IconButton(onClick = { onDelete(task) }) {
                         Icon(Icons.Filled.Delete, contentDescription = "Delete task")
                     }

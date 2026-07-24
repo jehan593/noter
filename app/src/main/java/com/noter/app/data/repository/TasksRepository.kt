@@ -23,6 +23,11 @@ class TasksRepository(
         TaskWidgetProvider.requestUpdate(context)
     }
 
+    suspend fun renameTask(task: TaskEntity, newText: String) {
+        dao.update(task.copy(text = newText))
+        TaskWidgetProvider.requestUpdate(context)
+    }
+
     suspend fun reorder(orderedTasks: List<TaskEntity>) {
         dao.updateAll(orderedTasks.mapIndexed { index, task -> task.copy(orderIndex = index) })
         TaskWidgetProvider.requestUpdate(context)

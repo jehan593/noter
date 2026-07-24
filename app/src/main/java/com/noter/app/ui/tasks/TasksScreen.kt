@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.noter.app.data.db.entity.TaskEntity
 import com.noter.app.ui.rememberAppContainer
 import com.noter.app.ui.theme.nord11
 import com.noter.app.ui.theme.nord12
@@ -49,6 +52,7 @@ fun TasksScreen() {
     )
     val tasks by viewModel.tasks.collectAsState()
     var newTaskText by remember { mutableStateOf("") }
+    var renamingTask by remember { mutableStateOf<TaskEntity?>(null) }
 
     fun submitNewTask() {
         viewModel.addTask(newTaskText)
@@ -107,10 +111,49 @@ fun TasksScreen() {
             tasks = tasks,
             onToggle = { viewModel.toggleDone(it) },
             onDelete = { viewModel.deleteTask(it) },
+            onRename = { renamingTask = it },
             onCommitReorder = { viewModel.commitReorder(it) },
             modifier = Modifier.fillMaxSize().padding(top = 8.dp)
         )
     }
+
+    renamingTask?.let { task ->
+        RenameTaskDialog(
+            initialText = task.text,
+            onDismiss = { renamingTask = null },
+            onSave = { newText ->
+                viewModel.renameTask(task, newText)
+                renamingTask = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun RenameTaskDialog(
+    initialText: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var text by remember { mutableStateOf(initialText) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename task") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(text) }, enabled = text.isNotBlank()) { Text("Save") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }
 
 @Composable
