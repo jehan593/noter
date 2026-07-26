@@ -82,6 +82,6 @@ directly on the matching tab.
 ## Fonts
 
 Martian Mono Nerd Font ships as bundled `.ttf`s under `res/font/` (license in
-`app/src/main/res/font/LICENSE.txt`). Glance/RemoteViews custom-font support is inconsistent
+`app/licenses/LICENSE.txt`). Glance/RemoteViews custom-font support is inconsistent
 across launchers, so widgets fall back to the system monospace font — only the in-app screens
 render the real Martian Mono.

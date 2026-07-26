@@ -54,7 +54,7 @@ regeneration step is needed.
 
 Martian Mono Nerd Font (`.ttf`, Regular/Medium/Bold) is bundled under `app/src/main/res/font/`,
 sourced from the [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) project releases (license
-in `app/src/main/res/font/LICENSE.txt`). Home-screen widget text falls back to the
+in `app/licenses/LICENSE.txt`). Home-screen widget text falls back to the
 system monospace font — Glance/RemoteViews custom-font support is inconsistent across launchers,
 so the in-app screens are where you'll see the real Martian Mono.
 
@@ -67,4 +67,4 @@ background service, no runtime-grant permission, and no network access anywhere 
 
 All rights reserved — no license is granted to use, modify, or redistribute this code. The
 bundled Martian Mono Nerd Font is separately licensed under the
-[SIL Open Font License 1.1](app/src/main/res/font/LICENSE.txt).
+[SIL Open Font License 1.1](app/licenses/LICENSE.txt).
