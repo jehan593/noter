@@ -137,6 +137,10 @@ private fun RenameTaskDialog(
 ) {
     var text by remember { mutableStateOf(initialText) }
 
+    fun submitRename() {
+        if (text.isNotBlank()) onSave(text)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Rename task") },
@@ -144,11 +148,14 @@ private fun RenameTaskDialog(
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { submitRename() })
             )
         },
         confirmButton = {
-            TextButton(onClick = { onSave(text) }, enabled = text.isNotBlank()) { Text("Save") }
+            TextButton(onClick = { submitRename() }, enabled = text.isNotBlank()) { Text("Save") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }
