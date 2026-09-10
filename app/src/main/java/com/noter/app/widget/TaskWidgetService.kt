@@ -12,6 +12,7 @@ import com.noter.app.data.db.entity.TaskEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
+/** Provides the rows shown in the task widget. */
 class TaskWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -19,7 +20,7 @@ class TaskWidgetService : RemoteViewsService() {
     }
 }
 
-/** Approximate rendered height of one widget_task_row.xml (14sp text + 1dp vertical padding each side). */
+/** Approximate height of one task row. */
 private const val TASK_ROW_HEIGHT_DP = 28
 
 private class TaskRemoteViewsFactory(
@@ -36,18 +37,14 @@ private class TaskRemoteViewsFactory(
     override fun onDataSetChanged() {
         val container = (context.applicationContext as NoterApplication).container
         val all = runBlocking { container.tasksRepository.tasksFlow.first() }
-        // Completed tasks sink to the bottom of the widget preview only — the persisted order
-        // used for in-app dragging is untouched, this is purely how the read-only widget lays
-        // them out.
+        // Completed tasks go to the bottom, mirroring the in-app list.
         tasks = all.sortedBy { it.isDone }
         val contentRows = maxOf(tasks.size, 1)
         fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = contentRows * TASK_ROW_HEIGHT_DP)
     }
 
-    // Real task count, or 1 for the dimmed placeholder row when empty — rather than 0 handing off
-    // to a separate setEmptyView sibling. A widget region with zero touch-handling of its own (no
-    // ListView, no click) turned out to pick up a default tap-to-open fallback on some launchers;
-    // keeping the ListView always populated keeps this area always backed by real touch handling.
+    // Always show at least one row (a dimmed placeholder when empty) so the area keeps touch
+    // handling.
     override fun getCount(): Int = maxOf(tasks.size, 1) + fillerCount
 
     override fun getViewAt(position: Int): RemoteViews {

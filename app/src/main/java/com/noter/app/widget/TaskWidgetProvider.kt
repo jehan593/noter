@@ -11,11 +11,7 @@ import android.widget.RemoteViews
 import com.noter.app.MainActivity
 import com.noter.app.R
 
-/**
- * See NoteWidgetProvider's class doc for why this is classic RemoteViews rather than Glance, and
- * why content is a ListView backed by TaskWidgetService's RemoteViewsFactory rather than static
- * rows — that's the only way to get real scrolling through an arbitrarily long task list.
- */
+/** Powers the task widget. See NoteWidgetProvider for how widget updates work. */
 class TaskWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -24,12 +20,7 @@ class TaskWidgetProvider : AppWidgetProvider() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, TaskWidgetProvider::class.java))
             if (ids.isNotEmpty()) {
-                // Data-only refresh: notifyAppWidgetViewDataChanged asks the already-connected
-                // ListView adapter to requery, without tearing down and reconnecting it the way a
-                // full updateAppWidget(buildViews()) does via setRemoteAdapter. Reconnecting on
-                // every mutation left a brief window right after the list changed (e.g. going
-                // from empty to populated) where rows were visually present but not yet fully
-                // wired for clicks — most noticeable in the filler rows near the bottom.
+                // Re-query the list rows without rebuilding and reconnecting the adapter.
                 manager.notifyAppWidgetViewDataChanged(ids, R.id.list)
             }
         }
@@ -39,9 +30,7 @@ class TaskWidgetProvider : AppWidgetProvider() {
         refresh(context, appWidgetManager, appWidgetIds)
     }
 
-    // Fires whenever the widget is placed or resized, with the real, system-reported size —
-    // re-running the factory here is what keeps the filler-row count matched to the actual
-    // current size instead of a one-size-fits-all guess.
+    // Re-match filler rows whenever the widget is placed or resized.
     override fun onAppWidgetOptionsChanged(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -72,10 +61,7 @@ class TaskWidgetProvider : AppWidgetProvider() {
             launchIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        // The title chip is the ONLY tap-to-open target — deliberately not the ListView content
-        // area (no setPendingIntentTemplate/fillInIntent) or root/empty. That ListView-mediated
-        // click path was the source of the flaky/inconsistent taps; the content area is read-only
-        // (scroll only) now, and the title is the single, reliable, always-clickable affordance.
+        // The title chip is the single, reliable tap target that opens the app.
         views.setOnClickPendingIntent(R.id.title, pendingIntent)
         return views
     }

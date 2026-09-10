@@ -1,6 +1,7 @@
 package com.noter.app.ui.tasks
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -42,9 +44,7 @@ fun DraggableTaskList(
     onCommitReorder: (List<TaskEntity>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Drives the LazyColumn directly so in-progress drag reordering has somewhere to write
-    // immediate visual moves to, without fighting the DB-backed Flow re-emitting mid-drag. Only
-    // resynced from the persisted list when not reflecting the drag's own write straight back.
+    // Kept local so drags update visuals immediately, then re-synced from the saved list.
     var localList by remember { mutableStateOf(tasks) }
     LaunchedEffect(tasks) { localList = tasks }
 
@@ -55,17 +55,18 @@ fun DraggableTaskList(
 
     LazyColumn(state = lazyListState, modifier = modifier) {
         items(localList, key = { it.id }) { task ->
-            // A completed task is excluded from reordering entirely: `enabled = false` here drops
-            // it out of the library's target set (nothing can ever be dropped into its slot — see
-            // TasksViewModel's stable isDone sort, which always keeps completed tasks at the
-            // bottom), and `enabled = false` on the drag handle below stops it from being picked
-            // up in the first place. Together this caps how far an incomplete task can be dragged
-            // down at just above the first completed one, without any manual index math.
+            // Completed tasks can't be dragged or used as a drop target.
             ReorderableItem(reorderableState, key = task.id, enabled = !task.isDone) { isDragging ->
                 val elevation by animateDpAsState(if (isDragging) 6.dp else 0.dp, label = "dragElevation")
-                Surface(tonalElevation = elevation, shadowElevation = elevation) {
+                Surface(
+                    tonalElevation = elevation,
+                    shadowElevation = elevation,
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(

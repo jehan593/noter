@@ -12,19 +12,14 @@ import kotlinx.coroutines.runBlocking
 
 class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 
-    // Completed tasks sink to the bottom (stable sort — order within each group still reflects
-    // orderIndex, i.e. your drag arrangement) so the in-app list and the widget preview agree.
+    // Completed tasks sink to the bottom so the app list and widget preview agree.
     val tasks: StateFlow<List<TaskEntity>> =
         repository.tasksFlow
             .map { list -> list.sortedBy { it.isDone } }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Deliberately blocking (not viewModelScope.launch): these are one-shot user actions, and
-    // Android can freeze a backgrounded app's coroutines mid-flight the instant it's minimized.
-    // A fire-and-forget launch here could get frozen before the Room write + widget updateAll()
-    // finish, so the action would silently never reach the widget. Blocking on the calling
-    // (main) thread guarantees the write + widget refresh complete before this function returns
-    // — i.e. before the click handler finishes and the user can background the app.
+    // Actions run on the main thread so each Room write (and its widget refresh) finishes
+    // before the user can background the app mid-save.
 
     fun addTask(text: String) {
         if (text.isNotBlank()) runBlocking { repository.addTask(text.trim()) }

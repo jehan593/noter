@@ -2,6 +2,7 @@ package com.noter.app.ui.tasks
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,9 +60,7 @@ fun TasksScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Delete completed / Delete all — the two destructive actions — sit up top, above the
-        // add-task box. Check all / Uncheck all move below the add-task box instead, closer to
-        // the task list they act on.
+        // Destructive actions sit on top; the bulk check/uncheck buttons live below the add box.
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -85,6 +83,7 @@ fun TasksScreen() {
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Add a task…") },
                 singleLine = true,
+                shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { submitNewTask() })
             )
@@ -150,15 +149,19 @@ private fun RenameTaskDialog(
                 onValueChange = { text = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { submitRename() })
             )
         },
         confirmButton = {
-            TextButton(onClick = { submitRename() }, enabled = text.isNotBlank()) { Text("Save") }
+            OutlinedButton(
+                onClick = { submitRename() },
+                enabled = text.isNotBlank()
+            ) { Text("Save") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
 }

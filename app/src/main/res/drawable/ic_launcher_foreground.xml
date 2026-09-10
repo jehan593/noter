@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Simple checkmark mark, kept within the ~66dp adaptive-icon safe zone of the 108dp viewport -->
+<!-- Note page (snow-white) with a folded top-right corner and a checkmark, kept within
+     the ~66dp adaptive-icon safe zone of the 108dp viewport -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- note page -->
     <path
-        android:fillColor="#88C0D0"
-        android:pathData="M54,54 m -30,0 a 30,30 0 1,0 60,0 a 30,30 0 1,0 -60,0" />
+        android:fillColor="#ECEFF4"
+        android:pathData="M40.275,31.5 h29.25 a5.4,5.4 0 0 1 5.4,5.4 v34.2 a5.4,5.4 0 0 1 -5.4,5.4 h-29.25 a5.4,5.4 0 0 1 -5.4,-5.4 v-34.2 a5.4,5.4 0 0 1 5.4,-5.4 z" />
+    <!-- folded corner -->
     <path
-        android:fillColor="#2E3440"
-        android:pathData="M54,54 m -24,0 a 24,24 0 1,0 48,0 a 24,24 0 1,0 -48,0" />
+        android:fillColor="#D8DEE9"
+        android:pathData="M60.525,31.5 L74.925,31.5 L74.925,45.9 Z" />
+    <!-- fold crease -->
     <path
-        android:fillColor="#88C0D0"
-        android:pathData="M38,58 L46,66 L48,66 L72,40 L67,35 L46,58 L43,53 Z" />
+        android:pathData="M60.525,31.5 L74.925,45.9"
+        android:strokeColor="#4C566A"
+        android:strokeWidth="1.35"
+        android:strokeLineCap="round" />
+    <!-- checkmark -->
+    <path
+        android:pathData="M44.1,56.7 L51.3,63.9 L64.35,49.5"
+        android:strokeColor="#5E81AC"
+        android:strokeWidth="5.85"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

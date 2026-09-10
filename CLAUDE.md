@@ -5,10 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 Noter: a fully offline Android note + task app. Nord color palette, Martian Mono Nerd Font, Jetpack
-Compose UI, two home-screen widgets (Note + Task). The only `<uses-permission>` is `INTERNET`, and
-only for the opt-in "Send to Notesnook" action on the Notes tab — no background service, no
-runtime-grant permissions. Keep it that way unless the user explicitly asks for a feature that
-requires a new permission.
+Compose UI, two home-screen widgets (Note + Task). The app requests no permissions — no background
+service, no runtime-grant permissions. Keep it that way unless the user explicitly asks for a
+feature that requires a new permission.
 
 ## Commands
 

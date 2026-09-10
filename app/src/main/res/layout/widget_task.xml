@@ -7,10 +7,7 @@
     android:orientation="vertical"
     android:padding="6dp">
 
-    <!-- Full-width "chip" look (own background, padding, trailing open icon) is deliberate: this
-         is the one region that's always a plain, single-region click (no ListView underneath
-         fighting it for scroll-vs-tap arbitration), so it's styled to visually read as THE
-         reliable tap-to-open target, distinct from the scrollable content below it. -->
+    <!-- The title chip is the reliable tap target that opens the app. -->
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -27,11 +24,7 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <!-- No separate "empty" view/setEmptyView swap — a totally passive region with zero touch
-         handling turned out to get a default tap-to-open fallback from some launchers (observed:
-         tapping anywhere on the widget opened the app, but only while the task list was empty).
-         Instead the list always has at least one row (a dimmed placeholder when empty), so this
-         area is always backed by an actively touch-handling ListView, same as with real content. -->
+    <!-- Always keep at least one row (a dimmed placeholder when empty) so the list keeps touch handling. -->
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

@@ -3,30 +3,12 @@ package com.noter.app.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 
-// Last successfully-read widget height, per widget id — a fallback for when a refresh's options
-// read momentarily comes back empty (see computeFillerRowCount) so that case reuses the real
-// last-known size instead of always dropping to the small hardcoded guess.
+// Last successfully-read widget height, per widget id — reused if a refresh size read is empty.
 private val lastKnownHeightDp = mutableMapOf<Int, Int>()
 
 /**
- * How many blank filler rows (see widget_filler_row.xml) a ListView-backed widget needs so its
- * total content height reaches — but doesn't wildly exceed — the widget's actual current size.
- * Too few and there's dead, unclickable space below short content; too many and the list becomes
- * scrollable well past its real content for no reason (a swipe that should hand off to the home
- * screen instead scrolls into blank space).
- *
- * [contentHeightDp] is the caller's best estimate of how tall the real (non-filler) rows already
- * are. [overheadDp] accounts for the title row and container padding that isn't part of the list.
- *
- * If the size genuinely has never been read for this widget (very first frame before the widget
- * host has reported anything), this deliberately falls back to a SMALL number rather than a
- * generous one — under-filling only brings back a narrow slice of the original dead-space issue in
- * a rare edge case, while over-filling directly reintroduces unwanted scroll, which is the worse
- * regression. But if a size was read successfully before and this particular refresh's read just
- * came back empty (the options bundle not always being populated on every call is a real launcher
- * quirk), reuse that last-known size instead of the small guess — otherwise every such refresh
- * under-fills a widget we already know is bigger than 2 filler rows, leaving real dead space at
- * the bottom that taps land on and silently do nothing.
+ * How many blank filler rows a widget list needs so its content fills the widget's real height.
+ * Short lists get padded to the actual size; the count falls back to 2 if the size is unknown.
  */
 fun computeFillerRowCount(
     context: Context,

@@ -12,15 +12,8 @@ import com.noter.app.MainActivity
 import com.noter.app.R
 
 /**
- * Classic AppWidgetProvider + RemoteViews rather than Jetpack Glance. Glance's own update path
- * (calling GlanceAppWidget.updateAll from ordinary app code) has no protection against Android's
- * cached-app freezer suspending the update mid-flight right after the app backgrounds. Routing
- * every refresh through a broadcast into this receiver's onReceive/goAsync() gives the update a
- * proper background-execution grace period instead, which is the same pattern battle-tested note
- * apps (e.g. Notally) use for their widgets.
- *
- * Content itself is a ListView backed by NoteWidgetService/NoteWidgetService's RemoteViewsFactory
- * (see that file) — the only way to get real scrolling in a widget.
+ * Powers the note widget. Updates are pushed through a broadcast so they get a proper
+ * background grace period even when the app was just backgrounded.
  */
 class NoteWidgetProvider : AppWidgetProvider() {
 
@@ -30,12 +23,7 @@ class NoteWidgetProvider : AppWidgetProvider() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, NoteWidgetProvider::class.java))
             if (ids.isNotEmpty()) {
-                // Data-only refresh: notifyAppWidgetViewDataChanged asks the already-connected
-                // ListView adapter to requery, without tearing down and reconnecting it the way a
-                // full updateAppWidget(buildViews()) does via setRemoteAdapter. Reconnecting on
-                // every keystroke/mutation left a brief window right after the list changed (e.g.
-                // going from empty to populated) where rows were visually present but not yet
-                // fully wired for clicks — most noticeable in the filler rows near the bottom.
+                // Re-query the list rows without rebuilding and reconnecting the adapter.
                 manager.notifyAppWidgetViewDataChanged(ids, R.id.list)
             }
         }
@@ -45,9 +33,7 @@ class NoteWidgetProvider : AppWidgetProvider() {
         refresh(context, appWidgetManager, appWidgetIds)
     }
 
-    // Fires whenever the widget is placed or resized, with the real, system-reported size —
-    // re-running the factory here is what keeps the filler-row count matched to the actual
-    // current size instead of a one-size-fits-all guess.
+    // Re-match filler rows whenever the widget is placed or resized.
     override fun onAppWidgetOptionsChanged(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -78,10 +64,7 @@ class NoteWidgetProvider : AppWidgetProvider() {
             launchIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        // The title chip is the ONLY tap-to-open target — deliberately not the ListView content
-        // area (no setPendingIntentTemplate/fillInIntent) or root/empty. That ListView-mediated
-        // click path was the source of the flaky/inconsistent taps; the content area is read-only
-        // (scroll only) now, and the title is the single, reliable, always-clickable affordance.
+        // The title chip is the single, reliable tap target that opens the app.
         views.setOnClickPendingIntent(R.id.title, pendingIntent)
         return views
     }
