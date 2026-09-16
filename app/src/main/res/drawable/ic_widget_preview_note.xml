@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Widget-picker preview image for the Note widget — distinct from the Task preview so the two
-     are tellable apart in the "Add widget" listing. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#2E3440"
-        android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
-    <path
-        android:fillColor="#88C0D0"
-        android:pathData="M28,32 L80,32 L80,40 L28,40 Z" />
-    <path
-        android:fillColor="#88C0D0"
-        android:pathData="M28,50 L80,50 L80,58 L28,58 Z" />
-    <path
-        android:fillColor="#88C0D0"
-        android:pathData="M28,68 L62,68 L62,76 L28,76 Z" />
+    <path android:fillColor="#3B4252"
+        android:pathData="M18,8 H90 A10,10 0 0 1 100,18 V90 A10,10 0 0 1 90,100 H18 A10,10 0 0 1 8,90 V18 A10,10 0 0 1 18,8 Z" />
+    <path android:fillColor="#434C5E"
+        android:pathData="M22,18 H86 A6,6 0 0 1 92,24 V36 A6,6 0 0 1 86,42 H22 A6,6 0 0 1 16,36 V24 A6,6 0 0 1 22,18 Z" />
+    <path android:fillColor="#81A1C1" android:pathData="M24,27 H58 V33 H24 Z" />
+    <path android:fillColor="#D8DEE9" android:pathData="M20,54 H86 V58 H20 Z M20,67 H82 V71 H20 Z M20,80 H65 V84 H20 Z" />
 </vector>

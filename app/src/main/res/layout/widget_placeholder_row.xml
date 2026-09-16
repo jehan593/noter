@@ -4,5 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fontFamily="monospace"
-    android:textColor="@color/nord3"
+    android:textColor="@color/widget_placeholder"
     android:textSize="14sp" />

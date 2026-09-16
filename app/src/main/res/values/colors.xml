@@ -7,7 +7,11 @@
          for the Compose equivalents used everywhere else). -->
     <color name="nord0">#2E3440</color>
     <color name="nord1">#3B4252</color>
+    <color name="nord2">#434C5E</color>
     <color name="nord3">#4C566A</color>
+    <color name="nord4">#D8DEE9</color>
+    <color name="widget_placeholder">#99D8DEE9</color>
     <color name="nord6">#ECEFF4</color>
     <color name="nord8">#88C0D0</color>
+    <color name="nord9">#81A1C1</color>
 </resources>

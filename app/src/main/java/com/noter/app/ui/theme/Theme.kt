@@ -10,13 +10,13 @@ import androidx.compose.runtime.Composable
 // the app keeps a fixed Nord identity regardless of the device wallpaper.
 
 private val NordDarkColorScheme = darkColorScheme(
-    primary = nord8,
+    primary = nord9,
     onPrimary = nord0,
     primaryContainer = nord10,
     onPrimaryContainer = nord6,
     secondary = nord7,
     onSecondary = nord0,
-    tertiary = nord9,
+    tertiary = nord8,
     onTertiary = nord0,
     background = nord0,
     onBackground = nord6,
@@ -30,14 +30,14 @@ private val NordDarkColorScheme = darkColorScheme(
 )
 
 private val NordLightColorScheme = lightColorScheme(
-    primary = nord10,
-    onPrimary = nord6,
+    primary = nord9,
+    onPrimary = nord0,
     primaryContainer = nord8,
     onPrimaryContainer = nord0,
     secondary = nord7,
     onSecondary = nord0,
-    tertiary = nord9,
-    onTertiary = nord6,
+    tertiary = nord8,
+    onTertiary = nord0,
     background = nord6,
     onBackground = nord0,
     surface = nord5,

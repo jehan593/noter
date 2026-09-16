@@ -2,21 +2,14 @@ package com.noter.app.ui.notes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,6 +29,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.noter.app.R
 import com.noter.app.ui.rememberAppContainer
+import com.noter.app.ui.components.ActionIconButton
 
 @Composable
 fun NotesScreen() {
@@ -71,27 +65,18 @@ fun NotesScreen() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            OutlinedButton(
+            ActionIconButton(
                 onClick = { clipboardManager.setText(AnnotatedString(noteText)) },
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.height(34.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_copy),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text("Copy", modifier = Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelSmall)
-            }
-            OutlinedButton(
+                icon = painterResource(R.drawable.ic_copy),
+                contentDescription = "Copy note",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            ActionIconButton(
                 onClick = { viewModel.onClear() },
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.height(34.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(16.dp))
-                Text("Clear", modifier = Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelSmall)
-            }
+                icon = painterResource(R.drawable.ic_delete_all),
+                contentDescription = "Clear note",
+                tint = MaterialTheme.colorScheme.error
+            )
         }
         // Kept in the layout even when empty so the note box below doesn't jump around.
         Text(
@@ -105,7 +90,11 @@ fun NotesScreen() {
             onValueChange = { viewModel.onTextChange(it) },
             modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 12.dp),
             placeholder = { Text("Type your note…") },
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }

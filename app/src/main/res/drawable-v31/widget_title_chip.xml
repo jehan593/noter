@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- API 31+ override: launchers on these versions clip the whole widget to
-     system_app_widget_background_radius automatically, and that radius varies by device/launcher
-     (commonly much bigger than a hardcoded 8dp). Only the chip's top corners sit at that outer
-     clip's own top corners, so only those match system_app_widget_inner_radius to stay concentric
-     with it; the bottom corners aren't near the widget's edge, so they keep the small hardcoded
-     8dp curve instead of the (often much larger) system radius, which read as oddly bulbous there. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/nord1" />
-    <corners
-        android:topLeftRadius="@android:dimen/system_app_widget_inner_radius"
-        android:topRightRadius="@android:dimen/system_app_widget_inner_radius"
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp" />
+    <solid android:color="@color/nord2" />
+    <corners android:radius="12dp" />
 </shape>

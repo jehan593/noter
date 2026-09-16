@@ -39,7 +39,7 @@ private class NoteRemoteViewsFactory(
         val container = (context.applicationContext as NoterApplication).container
         note = runBlocking { container.notesRepository.noteFlow.first() }
         val estimatedLines = if (note.isBlank()) 1 else note.lines().size
-        fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = estimatedLines * NOTE_LINE_HEIGHT_DP)
+        fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = estimatedLines * NOTE_LINE_HEIGHT_DP, overheadDp = 66)
     }
 
     override fun getCount(): Int = 1 + fillerCount

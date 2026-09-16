@@ -40,7 +40,7 @@ private class TaskRemoteViewsFactory(
         // Completed tasks go to the bottom, mirroring the in-app list.
         tasks = all.sortedBy { it.isDone }
         val contentRows = maxOf(tasks.size, 1)
-        fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = contentRows * TASK_ROW_HEIGHT_DP)
+        fillerCount = computeFillerRowCount(context, appWidgetId, contentHeightDp = contentRows * TASK_ROW_HEIGHT_DP, overheadDp = 66)
     }
 
     // Always show at least one row (a dimmed placeholder when empty) so the area keeps touch
@@ -66,7 +66,7 @@ private class TaskRemoteViewsFactory(
         val paintFlags = if (task.isDone) Paint.STRIKE_THRU_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG else Paint.ANTI_ALIAS_FLAG
         views.setInt(R.id.text, "setPaintFlags", paintFlags)
         views.setTextColor(R.id.text, context.getColor(if (task.isDone) R.color.nord3 else R.color.nord6))
-        views.setTextColor(R.id.check, context.getColor(if (task.isDone) R.color.nord3 else R.color.nord8))
+        views.setTextColor(R.id.check, context.getColor(if (task.isDone) R.color.nord3 else R.color.nord9))
 
         return views
     }

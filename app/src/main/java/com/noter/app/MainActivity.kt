@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -59,16 +60,22 @@ private fun NoterApp(selectedTab: Int, onTabSelected: (Int) -> Unit) {
         topBar = {
             TabRow(
                 selectedTabIndex = selectedTab,
-                modifier = Modifier.statusBarsPadding()
+                modifier = Modifier.statusBarsPadding(),
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
             ) {
                 Tab(
                     selected = selectedTab == MainActivity.TAB_NOTES,
                     onClick = { onTabSelected(MainActivity.TAB_NOTES) },
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     text = { Text("Notes") }
                 )
                 Tab(
                     selected = selectedTab == MainActivity.TAB_TASKS,
                     onClick = { onTabSelected(MainActivity.TAB_TASKS) },
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     text = { Text("Tasks") }
                 )
             }

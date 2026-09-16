@@ -1,7 +1,6 @@
 package com.noter.app.ui.tasks
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,16 +56,15 @@ fun DraggableTaskList(
         items(localList, key = { it.id }) { task ->
             // Completed tasks can't be dragged or used as a drop target.
             ReorderableItem(reorderableState, key = task.id, enabled = !task.isDone) { isDragging ->
-                val elevation by animateDpAsState(if (isDragging) 6.dp else 0.dp, label = "dragElevation")
+                val elevation by animateDpAsState(if (isDragging) 3.dp else 0.dp, label = "dragElevation")
                 Surface(
-                    tonalElevation = elevation,
+                    color = MaterialTheme.colorScheme.surface,
                     shadowElevation = elevation,
                     shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -79,7 +77,7 @@ fun DraggableTaskList(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = "⠿", style = MaterialTheme.typography.titleLarge)
+                            Text(text = "⠿", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.outline)
                         }
                         Checkbox(checked = task.isDone, onCheckedChange = { onToggle(task) })
                         Text(
@@ -91,10 +89,10 @@ fun DraggableTaskList(
                             style = MaterialTheme.typography.bodyLarge
                         )
                         IconButton(onClick = { onRename(task) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Rename task")
+                            Icon(Icons.Filled.Edit, contentDescription = "Rename task", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         IconButton(onClick = { onDelete(task) }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Delete task")
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete task", tint = MaterialTheme.colorScheme.error)
                         }
                     }
                 }

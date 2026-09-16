@@ -1,26 +1,20 @@
 package com.noter.app.ui.tasks
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,19 +22,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.noter.app.R
 import com.noter.app.data.db.entity.TaskEntity
+import com.noter.app.ui.components.ActionIconButton
 import com.noter.app.ui.rememberAppContainer
-import com.noter.app.ui.theme.nord11
+import com.noter.app.ui.theme.nord7
 import com.noter.app.ui.theme.nord12
-import com.noter.app.ui.theme.nord14
-import com.noter.app.ui.theme.nord9
 
 @Composable
 fun TasksScreen() {
@@ -60,23 +55,11 @@ fun TasksScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Destructive actions sit on top; the bulk check/uncheck buttons live below the add box.
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            TaskActionButton(
-                label = "Delete completed",
-                tint = nord12,
-                onClick = { viewModel.deleteCompleted() }
-            )
-            TaskActionButton(
-                label = "Delete all",
-                tint = nord11,
-                onClick = { viewModel.deleteAll() }
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             OutlinedTextField(
                 value = newTaskText,
                 onValueChange = { newTaskText = it },
@@ -84,26 +67,48 @@ fun TasksScreen() {
                 placeholder = { Text("Add a task…") },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { submitNewTask() })
             )
-            IconButton(onClick = { submitNewTask() }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add task")
-            }
+            ActionIconButton(
+                onClick = { submitNewTask() },
+                icon = painterResource(R.drawable.ic_add),
+                contentDescription = "Add task",
+                tint = MaterialTheme.colorScheme.primary,
+                size = 48.dp
+            )
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            TaskActionButton(
-                label = "Check all",
-                tint = nord14,
-                onClick = { viewModel.markAllDone() }
+            ActionIconButton(
+                onClick = { viewModel.markAllDone() },
+                icon = painterResource(R.drawable.ic_check_all),
+                contentDescription = "Check all tasks",
+                tint = nord7
             )
-            TaskActionButton(
-                label = "Uncheck all",
-                tint = nord9,
-                onClick = { viewModel.unmarkAllDone() }
+            ActionIconButton(
+                onClick = { viewModel.unmarkAllDone() },
+                icon = painterResource(R.drawable.ic_uncheck_all),
+                contentDescription = "Uncheck all tasks",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            ActionIconButton(
+                onClick = { viewModel.deleteCompleted() },
+                icon = painterResource(R.drawable.ic_delete_completed),
+                contentDescription = "Delete completed tasks",
+                tint = nord12
+            )
+            ActionIconButton(
+                onClick = { viewModel.deleteAll() },
+                icon = painterResource(R.drawable.ic_delete_all),
+                contentDescription = "Delete all tasks",
+                tint = MaterialTheme.colorScheme.error
             )
         }
         DraggableTaskList(
@@ -112,7 +117,7 @@ fun TasksScreen() {
             onDelete = { viewModel.deleteTask(it) },
             onRename = { renamingTask = it },
             onCommitReorder = { viewModel.commitReorder(it) },
-            modifier = Modifier.fillMaxSize().padding(top = 8.dp)
+            modifier = Modifier.fillMaxSize().padding(top = 12.dp)
         )
     }
 
@@ -155,31 +160,13 @@ private fun RenameTaskDialog(
             )
         },
         confirmButton = {
-            OutlinedButton(
+            Button(
                 onClick = { submitRename() },
                 enabled = text.isNotBlank()
             ) { Text("Save") }
         },
         dismissButton = {
-            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
-}
-
-@Composable
-private fun TaskActionButton(
-    label: String,
-    tint: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OutlinedButton(
-        onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
-        modifier = modifier.height(34.dp),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = tint),
-        border = BorderStroke(1.dp, tint)
-    ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
-    }
 }
